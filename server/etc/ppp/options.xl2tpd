@@ -1,0 +1,12 @@
+ms-dns 10.9.9.1
+auth
+nodefaultroute
+
+lock
+proxyarp
+require-mschap-v2
+asyncmap 0
+ipcp-accept-local
+ipcp-accept-remote
+noccp
+crtscts

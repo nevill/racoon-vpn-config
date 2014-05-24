@@ -29,6 +29,8 @@ Server IP here is described as `1.1.1.1`, should be replace with yours
 * OS - Debian Wheezy (7.5)
 * iptables
 * racoon
+* xl2tpd
+* dnsmasq
 * danted (optional, socks server)
 
 ## Client
