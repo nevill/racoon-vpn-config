@@ -1,0 +1,2 @@
+# change to your own password
+* password

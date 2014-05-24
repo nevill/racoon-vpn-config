@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ "$INTERFACE" = "wan" ]; then
+  if [ "$ACTION" = ifup ]; then
+    touch /var/lock/vpn-up
+    /etc/racoon/addspd
+    ping -q -c 1 10.9.9.1 > /dev/null 2>&1
+  else
+    if [ "$ACTION" = ifdown ]; then
+      echo "
+        flush;
+        spdflush;" | setkey -c
+      rm /var/lock/vpn-up
+    fi
+  fi
+fi

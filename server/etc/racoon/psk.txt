@@ -1,0 +1,2 @@
+# key used for l2tp VPN setting in iOS
+* password

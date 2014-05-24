@@ -1,0 +1,4 @@
+# for ipsec vpn
+iptables -t nat -A postrouting_rule ! -s 192.168.1.0/24 -d 10.9.9.0/24 -j SNAT --to-source 192.168.1.1
+iptables -t nat -A postrouting_rule -m policy --dir out --pol ipsec -j ACCEPT
+iptables -A forwarding_rule -m policy --dir in --pol ipsec -j ACCEPT

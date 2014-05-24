@@ -1,0 +1,16 @@
+#!/bin/sh
+
+. /lib/functions.sh
+. /lib/functions/network.sh
+
+local wanip
+network_get_ipaddr wanip wan || return
+
+local local_subnet="192.168.1.0/24"
+
+echo "
+flush;
+spdflush;
+spdadd 10.9.9.1/32 192.168.1.0/24 any -P in ipsec esp/tunnel/1.1.1.1-$wanip/require;
+spdadd 192.168.1.0/24 10.9.9.1/32 any -P out ipsec esp/tunnel/$wanip-1.1.1.1/require;
+" | setkey -c

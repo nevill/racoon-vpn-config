@@ -1,0 +1,51 @@
+*security
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+COMMIT
+*raw
+:PREROUTING ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+COMMIT
+*nat
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+COMMIT
+*mangle
+:PREROUTING ACCEPT [0:0]
+:INPUT ACCEPT [0:0]
+:FORWARD ACCEPT [0:0]
+:OUTPUT ACCEPT [0:0]
+:POSTROUTING ACCEPT [0:0]
+COMMIT
+*filter
+:INPUT DROP [0:0]
+:FORWARD DROP [0:0]
+:OUTPUT ACCEPT [0:0]
+:ipsec_connection - [0:0]
+:ssh_rule - [0:0]
+:zone_vpn - [0:0]
+-A INPUT -m state --state RELATED,ESTABLISHED -j ACCEPT
+-A INPUT -p icmp -m icmp --icmp-type 8 -j ACCEPT
+-A INPUT -j zone_vpn
+-A INPUT -i eth0 ! -p tcp -j ipsec_connection
+-A INPUT -i eth0 -p tcp -m tcp --dport 22 -j ssh_rule
+
+# allow to eastablish IPSec connection
+-A ipsec_connection -p udp -m udp --dport 500 -j ACCEPT
+-A ipsec_connection -p udp -m udp --dport 4500 -j ACCEPT
+-A ipsec_connection -p esp -j ACCEPT
+# allow traffic to make a l2tp request after IPSec tunnel established
+-A ipsec_connection -p udp -m udp --dport 1701 -m policy --dir in --pol ipsec -j ACCEPT
+
+# allow site to site vpn traffic
+-A zone_vpn -m policy --dir in --pol ipsec -j ACCEPT
+# allow l2tp traffic
+-A zone_vpn -i ppp+ -j ACCEPT
+
+-A ssh_rule -p tcp -m tcp --dport 22 -m state --state NEW -m recent --set --name DEFAULT --rsource
+-A ssh_rule -p tcp -m tcp --dport 22 -m state --state NEW -m recent --update --seconds 360 --hitcount 2 --name DEFAULT --rsource -j DROP
+-A ssh_rule -p tcp -m tcp --dport 22 -j ACCEPT
+COMMIT

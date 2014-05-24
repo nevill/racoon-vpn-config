@@ -1,0 +1,2 @@
+# to test if IPSec connection established every 15 mins
+*/15 * * * * /etc/racoon/keep-alive
